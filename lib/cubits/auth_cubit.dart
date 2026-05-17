@@ -9,21 +9,14 @@ class AuthState {
   final User? user;
   final String? errorMessage;
 
-  AuthState({
-    this.status = AuthStatus.initial,
-    this.user,
-    this.errorMessage,
-  });
+  AuthState({this.status = AuthStatus.initial, this.user, this.errorMessage});
 
-  AuthState copyWith({
-    AuthStatus? status,
-    User? user,
-    String? errorMessage,
-  }) {
+  AuthState copyWith({AuthStatus? status, User? user, String? errorMessage}) {
     return AuthState(
       status: status ?? this.status,
       user: user ?? this.user,
-      errorMessage: errorMessage, // We want to be able to pass null or new error
+      errorMessage:
+          errorMessage, // We want to be able to pass null or new error
     );
   }
 }
@@ -53,15 +46,32 @@ class AuthCubit extends Cubit<AuthState> {
         email: email.trim(),
         password: password.trim(),
       );
-      emit(AuthState(status: AuthStatus.authenticated, user: userCredential.user));
+      emit(
+        AuthState(status: AuthStatus.authenticated, user: userCredential.user),
+      );
     } on FirebaseAuthException catch (e) {
-      emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message ?? 'An error occurred during sign in.'));
+      emit(
+        state.copyWith(
+          status: AuthStatus.error,
+          errorMessage: e.message ?? 'An error occurred during sign in.',
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(status: AuthStatus.error, errorMessage: e.toString()));
+      emit(
+        state.copyWith(status: AuthStatus.error, errorMessage: e.toString()),
+      );
     }
   }
 
-  Future<void> signUp(String email, String password, String name) async {
+  Future<void> signUp(
+    String email,
+    String password,
+    String name,
+    String school,
+    String location,
+    String occupation,
+    String whatsapp,
+  ) async {
     emit(state.copyWith(status: AuthStatus.loading));
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
@@ -71,10 +81,14 @@ class AuthCubit extends Cubit<AuthState> {
 
       // Create user document in Firestore
       if (userCredential.user != null) {
-        await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        await _firestore.collection('sages').doc(userCredential.user!.uid).set({
           'name': name.trim(),
           'email': email.trim(),
-          'role': 'Member',
+          'role': 'Sage',
+          'school': school.trim(),
+          'location': location.trim(),
+          'occupation': occupation.trim(),
+          'whatsapp': whatsapp.trim(),
           'myContribution': 0.0,
           'createdAt': FieldValue.serverTimestamp(),
         });
@@ -83,11 +97,20 @@ class AuthCubit extends Cubit<AuthState> {
         await userCredential.user!.updateDisplayName(name.trim());
       }
 
-      emit(AuthState(status: AuthStatus.authenticated, user: userCredential.user));
+      emit(
+        AuthState(status: AuthStatus.authenticated, user: userCredential.user),
+      );
     } on FirebaseAuthException catch (e) {
-      emit(state.copyWith(status: AuthStatus.error, errorMessage: e.message ?? 'An error occurred during sign up.'));
+      emit(
+        state.copyWith(
+          status: AuthStatus.error,
+          errorMessage: e.message ?? 'An error occurred during sign up.',
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(status: AuthStatus.error, errorMessage: e.toString()));
+      emit(
+        state.copyWith(status: AuthStatus.error, errorMessage: e.toString()),
+      );
     }
   }
 
@@ -97,13 +120,22 @@ class AuthCubit extends Cubit<AuthState> {
       await _auth.signOut();
       emit(AuthState(status: AuthStatus.unauthenticated));
     } catch (e) {
-      emit(state.copyWith(status: AuthStatus.error, errorMessage: e.toString()));
+      emit(
+        state.copyWith(status: AuthStatus.error, errorMessage: e.toString()),
+      );
     }
   }
 
   void clearError() {
     if (state.status == AuthStatus.error) {
-      emit(state.copyWith(status: state.user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated, errorMessage: null));
+      emit(
+        state.copyWith(
+          status: state.user != null
+              ? AuthStatus.authenticated
+              : AuthStatus.unauthenticated,
+          errorMessage: null,
+        ),
+      );
     }
   }
 }

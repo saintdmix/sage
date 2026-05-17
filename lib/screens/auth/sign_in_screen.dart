@@ -26,9 +26,9 @@ class _SignInScreenState extends State<SignInScreen> {
   void _signIn() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthCubit>().signIn(
-            _emailController.text,
-            _passwordController.text,
-          );
+        _emailController.text,
+        _passwordController.text,
+      );
     }
   }
 
@@ -82,12 +82,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ),
                       const Text(
-                        'Group Contribution App',
+                        'Statesmen Advancing Growth And Excellence',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                       const SizedBox(height: 48),
                       TextFormField(
@@ -97,7 +94,10 @@ class _SignInScreenState extends State<SignInScreen> {
                           filled: true,
                           fillColor: Colors.white.withValues(alpha: 0.1),
                           hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.email, color: AppTheme.goldColor),
+                          prefixIcon: const Icon(
+                            Icons.email,
+                            color: AppTheme.goldColor,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -120,7 +120,10 @@ class _SignInScreenState extends State<SignInScreen> {
                           filled: true,
                           fillColor: Colors.white.withValues(alpha: 0.1),
                           hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.lock, color: AppTheme.goldColor),
+                          prefixIcon: const Icon(
+                            Icons.lock,
+                            color: AppTheme.goldColor,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -139,15 +142,22 @@ class _SignInScreenState extends State<SignInScreen> {
                       BlocBuilder<AuthCubit, AuthState>(
                         builder: (context, state) {
                           return ElevatedButton(
-                            onPressed: state.status == AuthStatus.loading ? null : _signIn,
+                            onPressed: state.status == AuthStatus.loading
+                                ? null
+                                : _signIn,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.goldColor,
                               foregroundColor: AppTheme.wineColor,
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             child: state.status == AuthStatus.loading
-                                ? const CircularProgressIndicator(color: AppTheme.wineColor)
+                                ? const CircularProgressIndicator(
+                                    color: AppTheme.wineColor,
+                                  )
                                 : const Text('SIGN IN'),
                           );
                         },
@@ -157,7 +167,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpScreen(),
+                            ),
                           );
                         },
                         child: const Text(

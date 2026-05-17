@@ -9,9 +9,7 @@ class SagesProfilesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sages Profiles'),
-      ),
+      appBar: AppBar(title: const Text('Sages Profiles')),
       body: BlocBuilder<AppCubit, AppState>(
         builder: (context, state) {
           if (state.members.isEmpty) {
@@ -29,7 +27,9 @@ class SagesProfilesScreen extends StatelessWidget {
                   leading: CircleAvatar(
                     backgroundColor: AppTheme.wineColor,
                     child: Text(
-                      member['name']?.substring(0, 1).toUpperCase() ?? 'S',
+                      (member['name'] != null && member['name'].toString().isNotEmpty)
+                          ? member['name'].toString().substring(0, 1).toUpperCase()
+                          : 'S',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
@@ -37,7 +37,7 @@ class SagesProfilesScreen extends StatelessWidget {
                     member['name'] ?? 'Unknown Member',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(member['role'] ?? 'Member'),
+                  subtitle: Text(member['school'] ?? 'Member'),
                   trailing: Text(
                     '₦${((member['myContribution'] ?? 0) as num).toDouble().toStringAsFixed(2)}',
                     style: const TextStyle(

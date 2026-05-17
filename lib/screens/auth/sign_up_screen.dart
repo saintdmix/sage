@@ -14,6 +14,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _schoolController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _occupationController = TextEditingController();
+  final _whatsappController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -27,10 +31,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _signUp() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthCubit>().signUp(
-            _emailController.text,
-            _passwordController.text,
-            _nameController.text,
-          );
+        _emailController.text,
+        _passwordController.text,
+        _nameController.text,
+        _schoolController.text,
+        _locationController.text,
+        _occupationController.text,
+        _whatsappController.text,
+      );
     }
   }
 
@@ -74,7 +82,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           IconButton(
                             onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
                           ),
                         ],
                       ),
@@ -102,7 +113,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           filled: true,
                           fillColor: Colors.white.withValues(alpha: 0.1),
                           hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.person, color: AppTheme.goldColor),
+                          prefixIcon: const Icon(
+                            Icons.person,
+                            color: AppTheme.goldColor,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -118,13 +132,116 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        controller: _schoolController,
+                        decoration: InputDecoration(
+                          hintText: 'School Served As a Student',
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.1),
+                          hintStyle: const TextStyle(color: Colors.white70),
+                          prefixIcon: const Icon(
+                            Icons.school,
+                            color: AppTheme.goldColor,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your School Served As a Student';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _locationController,
+                        decoration: InputDecoration(
+                          hintText: 'Current Location',
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.1),
+                          hintStyle: const TextStyle(color: Colors.white70),
+                          prefixIcon: const Icon(
+                            Icons.location_city,
+                            color: AppTheme.goldColor,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your Current Location';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _occupationController,
+                        decoration: InputDecoration(
+                          hintText: 'Occupation/Interest/Handwork',
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.1),
+                          hintStyle: const TextStyle(color: Colors.white70),
+                          prefixIcon: const Icon(
+                            Icons.work,
+                            color: AppTheme.goldColor,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your Occupation/Interest/Handwork';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _whatsappController,
+                        decoration: InputDecoration(
+                          hintText: 'WhatsApp Number',
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.1),
+                          hintStyle: const TextStyle(color: Colors.white70),
+                          prefixIcon: const Icon(
+                            Icons.phone,
+                            color: AppTheme.goldColor,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your WhatsApp Number';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
                           hintText: 'Email',
                           filled: true,
                           fillColor: Colors.white.withValues(alpha: 0.1),
                           hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.email, color: AppTheme.goldColor),
+                          prefixIcon: const Icon(
+                            Icons.email,
+                            color: AppTheme.goldColor,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -147,7 +264,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           filled: true,
                           fillColor: Colors.white.withValues(alpha: 0.1),
                           hintStyle: const TextStyle(color: Colors.white70),
-                          prefixIcon: const Icon(Icons.lock, color: AppTheme.goldColor),
+                          prefixIcon: const Icon(
+                            Icons.lock,
+                            color: AppTheme.goldColor,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -166,15 +286,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       BlocBuilder<AuthCubit, AuthState>(
                         builder: (context, state) {
                           return ElevatedButton(
-                            onPressed: state.status == AuthStatus.loading ? null : _signUp,
+                            onPressed: state.status == AuthStatus.loading
+                                ? null
+                                : _signUp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.goldColor,
                               foregroundColor: AppTheme.wineColor,
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             child: state.status == AuthStatus.loading
-                                ? const CircularProgressIndicator(color: AppTheme.wineColor)
+                                ? const CircularProgressIndicator(
+                                    color: AppTheme.wineColor,
+                                  )
                                 : const Text('CREATE ACCOUNT'),
                           );
                         },

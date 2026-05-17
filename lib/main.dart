@@ -5,11 +5,14 @@ import 'theme/app_theme.dart';
 import 'cubits/app_cubit.dart';
 import 'cubits/auth_cubit.dart';
 import 'screens/main_navigation.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');
   }

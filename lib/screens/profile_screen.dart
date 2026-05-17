@@ -11,9 +11,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
+      appBar: AppBar(title: const Text('Profile')),
       body: BlocBuilder<AppCubit, AppState>(
         builder: (context, state) {
           final me = state.members.firstWhere(
@@ -36,7 +34,10 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   me['name'] ?? 'Unknown',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   me['role'] ?? 'Member',
@@ -44,13 +45,15 @@ class ProfileScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 40),
-                
+
                 // Pay Dues Button
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const DuesHistoryScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const DuesHistoryScreen(),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.payment),
@@ -66,7 +69,10 @@ class ProfileScreen extends StatelessWidget {
                     context.read<AuthCubit>().signOut();
                   },
                   icon: const Icon(Icons.logout, color: AppTheme.wineColor),
-                  label: const Text('Sign Out', style: TextStyle(color: AppTheme.wineColor)),
+                  label: const Text(
+                    'Sign Out',
+                    style: TextStyle(color: AppTheme.wineColor),
+                  ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     side: const BorderSide(color: AppTheme.wineColor),
@@ -75,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const Spacer(),
                 const Center(
                   child: Text(
