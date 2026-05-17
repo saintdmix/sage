@@ -3,10 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/app_cubit.dart';
 import '../cubits/auth_cubit.dart';
 import '../theme/app_theme.dart';
+import 'package:image_picker/image_picker.dart';
 import 'dues_history_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _updateProfilePhoto(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null && context.mounted) {
+      context.read<AppCubit>().uploadProfilePhoto(pickedFile);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +34,49 @@ class ProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundColor: AppTheme.goldColor,
-                  child: Icon(Icons.person, size: 50, color: Colors.white),
+                Center(
+                  child: Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _updateProfilePhoto(context),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: AppTheme.goldColor,
+                          backgroundImage: me['profilePhotoUrl'] != null
+                              ? NetworkImage(me['profilePhotoUrl'])
+                              : null,
+                          child: me['profilePhotoUrl'] == null
+                              ? const Icon(Icons.person, size: 50, color: Colors.white)
+                              : null,
+                        ),
+                      ),
+                      if (state.isLoading)
+                        const Positioned.fill(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.wineColor,
+                          ),
+                        ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () => _updateProfilePhoto(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: AppTheme.wineColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(

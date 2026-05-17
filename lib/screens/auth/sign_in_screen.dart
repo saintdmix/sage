@@ -72,7 +72,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'SAGES',
+                        "D'SAGE",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppTheme.goldColor,

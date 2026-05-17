@@ -221,6 +221,48 @@ class AppCubit extends Cubit<AppState> {
     }
   }
 
+  Future<void> uploadProfilePhoto(XFile file) async {
+    if (currentUserId == null) {
+      emit(state.copyWith(errorMessage: 'User not authenticated'));
+      return;
+    }
+
+    emit(state.copyWith(isLoading: true, clearMessages: true));
+    try {
+      final ref = _storage.ref().child(
+        'profile_photos/${currentUserId}_${DateTime.now().millisecondsSinceEpoch}_${file.name}',
+      );
+
+      if (kIsWeb) {
+        final bytes = await file.readAsBytes();
+        await ref.putData(bytes);
+      } else {
+        await ref.putFile(File(file.path));
+      }
+
+      final photoUrl = await ref.getDownloadURL();
+
+      // Save to Firestore
+      await _firestore.collection('sages').doc(currentUserId).update({
+        'profilePhotoUrl': photoUrl,
+      });
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          successMessage: 'Profile photo updated successfully!',
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Failed to update profile photo: $e',
+        ),
+      );
+    }
+  }
+
   void clearMessages() {
     emit(state.copyWith(clearMessages: true));
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/app_cubit.dart';
 import '../theme/app_theme.dart';
+import 'sage_details_screen.dart';
 
 class SagesProfilesScreen extends StatelessWidget {
   const SagesProfilesScreen({super.key});
@@ -26,12 +27,17 @@ class SagesProfilesScreen extends StatelessWidget {
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: AppTheme.wineColor,
-                    child: Text(
-                      (member['name'] != null && member['name'].toString().isNotEmpty)
-                          ? member['name'].toString().substring(0, 1).toUpperCase()
-                          : 'S',
-                      style: const TextStyle(color: Colors.white),
-                    ),
+                    backgroundImage: member['profilePhotoUrl'] != null
+                        ? NetworkImage(member['profilePhotoUrl'])
+                        : null,
+                    child: member['profilePhotoUrl'] == null
+                        ? Text(
+                            (member['name'] != null && member['name'].toString().isNotEmpty)
+                                ? member['name'].toString().substring(0, 1).toUpperCase()
+                                : 'S',
+                            style: const TextStyle(color: Colors.white),
+                          )
+                        : null,
                   ),
                   title: Text(
                     member['name'] ?? 'Unknown Member',
@@ -46,6 +52,14 @@ class SagesProfilesScreen extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SageDetailsScreen(member: member),
+                      ),
+                    );
+                  },
                 ),
               );
             },
