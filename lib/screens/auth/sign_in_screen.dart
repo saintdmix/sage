@@ -53,10 +53,14 @@ class _SignInScreenState extends State<SignInScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(
-                      Icons.security,
-                      size: 80,
-                      color: AppTheme.goldColor,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.asset(
+                        'assets/sageicon.jpg',
+                        width: 110,
+                        height: 250,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     const Text(
@@ -70,7 +74,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     const Text(
-                      'Statesmen Advancing Growth And Excellencee',
+                      'Statesmen Advancing Growth And Excellence',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white70, fontSize: 16),
                     ),
