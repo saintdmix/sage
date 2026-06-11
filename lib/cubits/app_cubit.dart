@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -15,6 +16,7 @@ class AppState {
   final Map<String, dynamic>? accountDetails;
   final String? errorMessage;
   final String? successMessage;
+  final bool hasLoadedMembers;
 
   AppState({
     this.isLoading = false,
@@ -25,6 +27,7 @@ class AppState {
     this.accountDetails,
     this.errorMessage,
     this.successMessage,
+    this.hasLoadedMembers = false,
   });
 
   AppState copyWith({
@@ -36,6 +39,7 @@ class AppState {
     Map<String, dynamic>? accountDetails,
     String? errorMessage,
     String? successMessage,
+    bool? hasLoadedMembers,
     bool clearMessages = false,
   }) {
     return AppState(
@@ -50,6 +54,7 @@ class AppState {
       successMessage: clearMessages
           ? null
           : (successMessage ?? this.successMessage),
+      hasLoadedMembers: hasLoadedMembers ?? this.hasLoadedMembers,
     );
   }
 }
@@ -140,7 +145,7 @@ class AppCubit extends Cubit<AppState> {
             final members = query.docs
                 .map((doc) => {'id': doc.id, ...doc.data()})
                 .toList();
-            emit(state.copyWith(members: members));
+            emit(state.copyWith(members: members, hasLoadedMembers: true));
           },
           onError: (e) {
             debugPrint('Error fetching members: $e');
@@ -221,16 +226,20 @@ class AppCubit extends Cubit<AppState> {
     }
   }
 
-  Future<void> uploadProfilePhoto(XFile file) async {
-    if (currentUserId == null) {
+  Future<bool> uploadProfilePhoto(XFile file) async {
+    final userId = currentUserId ?? FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
       emit(state.copyWith(errorMessage: 'User not authenticated'));
-      return;
+      return false;
     }
+
+    currentUserId ??= userId;
 
     emit(state.copyWith(isLoading: true, clearMessages: true));
     try {
       final ref = _storage.ref().child(
-        'profile_photos/${currentUserId}_${DateTime.now().millisecondsSinceEpoch}_${file.name}',
+        'profile_photos/${userId}_${DateTime.now().millisecondsSinceEpoch}_${file.name}',
       );
 
       if (kIsWeb) {
@@ -243,9 +252,9 @@ class AppCubit extends Cubit<AppState> {
       final photoUrl = await ref.getDownloadURL();
 
       // Save to Firestore
-      await _firestore.collection('sages').doc(currentUserId).update({
+      await _firestore.collection('sages').doc(userId).set({
         'profilePhotoUrl': photoUrl,
-      });
+      }, SetOptions(merge: true));
 
       emit(
         state.copyWith(
@@ -253,6 +262,7 @@ class AppCubit extends Cubit<AppState> {
           successMessage: 'Profile photo updated successfully!',
         ),
       );
+      return true;
     } catch (e) {
       emit(
         state.copyWith(
@@ -260,6 +270,7 @@ class AppCubit extends Cubit<AppState> {
           errorMessage: 'Failed to update profile photo: $e',
         ),
       );
+      return false;
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../cubits/auth_cubit.dart';
 import '../../theme/app_theme.dart';
 
@@ -18,28 +19,92 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _locationController = TextEditingController();
   final _occupationController = TextEditingController();
   final _whatsappController = TextEditingController();
+  final _dateOfBirthController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  XFile? _profilePhoto;
+  DateTime? _dateOfBirth;
+  String? _profilePhotoError;
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _schoolController.dispose();
+    _locationController.dispose();
+    _occupationController.dispose();
+    _whatsappController.dispose();
+    _dateOfBirthController.dispose();
     super.dispose();
   }
 
-  void _signUp() {
-    if (_formKey.currentState!.validate()) {
-      context.read<AuthCubit>().signUp(
-        _emailController.text,
-        _passwordController.text,
-        _nameController.text,
-        _schoolController.text,
-        _locationController.text,
-        _occupationController.text,
-        _whatsappController.text,
-      );
+  Future<void> _pickProfilePhoto() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+      maxWidth: 1024,
+      maxHeight: 1024,
+    );
+    if (pickedFile != null && mounted) {
+      setState(() {
+        _profilePhoto = pickedFile;
+        _profilePhotoError = null;
+      });
     }
+  }
+
+  Future<void> _pickDateOfBirth() async {
+    final now = DateTime.now();
+    final initialDate = DateTime(now.year - 18, now.month, now.day);
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate: now,
+    );
+
+    if (pickedDate != null && mounted) {
+      setState(() {
+        _dateOfBirth = pickedDate;
+        _dateOfBirthController.text = MaterialLocalizations.of(
+          context,
+        ).formatMediumDate(pickedDate);
+      });
+    }
+  }
+
+  void _signUp() {
+    final isFormValid = _formKey.currentState!.validate();
+    final hasPhoto = _profilePhoto != null;
+    final hasDob = _dateOfBirth != null;
+
+    setState(() {
+      _profilePhotoError = hasPhoto ? null : 'Please select a profile photo';
+    });
+
+    if (!isFormValid || !hasPhoto || !hasDob) {
+      final message = !hasPhoto
+          ? 'Please upload a profile photo'
+          : 'Please select your date of birth';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    context.read<AuthCubit>().signUp(
+      _emailController.text,
+      _passwordController.text,
+      _nameController.text,
+      _schoolController.text,
+      _locationController.text,
+      _occupationController.text,
+      _whatsappController.text,
+      _profilePhoto!,
+      _dateOfBirth!,
+    );
   }
 
   @override
@@ -56,7 +121,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             );
             context.read<AuthCubit>().clearError();
           } else if (state.status == AuthStatus.authenticated) {
-            // Navigator will be handled by the root view listener
             Navigator.of(context).popUntil((route) => route.isFirst);
           }
         },
@@ -105,7 +169,111 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           letterSpacing: 2,
                         ),
                       ),
-                      const SizedBox(height: 48),
+                      const SizedBox(height: 32),
+                      InkWell(
+                        onTap: _pickProfilePhoto,
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.12),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 28,
+                                backgroundColor: AppTheme.goldColor,
+                                child: _profilePhoto == null
+                                    ? const Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.white,
+                                      )
+                                    : const Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                      ),
+                              ),
+                              const SizedBox(width: 16),
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Profile Photo',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Tap to upload a photo',
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Icon(
+                                Icons.upload,
+                                color: AppTheme.goldColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (_profilePhoto != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            _profilePhoto!.name,
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                        ),
+                      if (_profilePhotoError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            _profilePhotoError!,
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _dateOfBirthController,
+                        readOnly: true,
+                        onTap: _pickDateOfBirth,
+                        decoration: InputDecoration(
+                          hintText: 'Date of Birth',
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.1),
+                          hintStyle: const TextStyle(color: Colors.white70),
+                          prefixIcon: const Icon(
+                            Icons.calendar_month,
+                            color: AppTheme.goldColor,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        validator: (value) {
+                          if (_dateOfBirth == null ||
+                              value == null ||
+                              value.isEmpty) {
+                            return 'Please select your date of birth';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
