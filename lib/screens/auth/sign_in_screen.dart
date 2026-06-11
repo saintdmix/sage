@@ -70,7 +70,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     const Text(
-                      'Statesmen Advancing Growth And Excellence',
+                      'Statesmen Advancing Growth And Excellencee',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white70, fontSize: 16),
                     ),
