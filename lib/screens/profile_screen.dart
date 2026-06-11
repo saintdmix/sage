@@ -21,6 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isUploadingPhoto = false;
 
   Future<void> _updateProfilePhoto(BuildContext context) async {
+    final appCubit = context.read<AppCubit>();
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
@@ -29,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       maxHeight: 1024,
     );
 
-    if (pickedFile == null || !context.mounted) {
+    if (pickedFile == null || !mounted) {
       return;
     }
 
@@ -41,9 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isUploadingPhoto = true;
     });
 
-    final success = await context.read<AppCubit>().uploadProfilePhoto(
-      pickedFile,
-    );
+    final success = await appCubit.uploadProfilePhoto(pickedFile);
     if (!mounted) return;
 
     setState(() {
@@ -59,6 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String fallbackName,
   }) {
     final hasRemotePhoto = photoUrl != null && photoUrl.isNotEmpty;
+    final remotePhotoUrl = photoUrl ?? '';
 
     Widget child;
     if (_pendingPhotoBytes != null) {
@@ -70,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     } else if (hasRemotePhoto) {
       child = Image.network(
-        photoUrl!,
+        remotePhotoUrl,
         fit: BoxFit.cover,
         width: 100,
         height: 100,
